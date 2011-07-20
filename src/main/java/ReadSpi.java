@@ -34,7 +34,7 @@ public class ReadSpi {
         Enumeration<URL> resources = Thread.currentThread().getContextClassLoader().getResources(
                 "META-INF/services/MyService.config");
         while (resources.hasMoreElements()) {
-            System.out.format("Next: %s", resources.nextElement());
+            System.out.format("Next: %s%n", resources.nextElement());
         }
     }
 
