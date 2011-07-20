@@ -28,3 +28,32 @@ task jarWithDeps(type: Jar, dependsOn: classes) {
   	attributes 'Main-Class': 'ReadSpi'
   }
 }
+
+task jarWithDeps2(type: Jar, dependsOn: classes) {
+    mergeDir = "${buildDir}/merge"
+    // might need a lazy var in a multi-module project where deps are inherited
+    runtimeDeps = configurations.runtime.collect { zipTree(it) }
+    myServiceConfig = 'META-INF/services/MyService.config'
+    
+    doFirst {
+        new File(mergeDir).delete()
+        mergeFiles(mergeDir, runtimeDeps, myServiceConfig)
+    }
+ 
+    // this project's classes and all deps
+    from sourceSets*.classesDir
+    from(runtimeDeps) {
+        exclude myServiceConfig
+    }
+    from mergeDir
+}
+ 
+private def mergeFiles(targetDir, fileTrees, relativePath) {
+  // prepare the merge
+  mergedFile = new File("${targetDir}/${relativePath}")
+  new File(mergedFile.parent).mkdirs()
+ 
+  fileTrees*.matching({ include "**/${relativePath}" })*.each {
+    mergedFile << it.bytes
+  }
+}
