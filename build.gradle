@@ -1,0 +1,30 @@
+apply plugin: 'java'
+
+group = 'com.acme'
+version = '1.0'
+
+dependencies {
+  compile 'acme:a:1.0'
+  compile 'acme:b:1.0'
+}
+
+repositories {
+	mavenRepo urls: "file:///${toJavaPath(projectDir.absolutePath)}/lib"
+}
+
+private def toJavaPath(path) {
+  return path.replace(File.separator, '/')
+}
+
+task jarWithDeps(type: Jar, dependsOn: classes) {
+	archiveName = "${baseName}-by-gradle.${extension}"
+	compileDeps = configurations.compile.collect { zipTree(it) }
+
+	// this project's classes and all deps
+	from sourceSets*.classesDir
+	from compileDeps
+
+  manifest {
+  	attributes 'Main-Class': 'ReadSpi'
+  }
+}
