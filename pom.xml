@@ -62,4 +62,90 @@
       <scope>compile</scope>
     </dependency>
   </dependencies>
+  
+  <profiles>
+    <profile>
+      <id>with-shade-plugin</id>
+      <build>
+        <plugins>
+          <!-- skip the assembly plugin -->
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>skip</phase>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-shade-plugin</artifactId>
+            <version>1.4</version>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>shade</goal>
+                </goals>
+                <configuration>
+                  <finalName>${project.artifactId}-by-shade</finalName>
+                  <transformers>
+                    <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                  <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                    <mainClass>ReadSpi</mainClass>
+                  </transformer>
+                  </transformers>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <!-- requires the fixes from http://pastebin.com/QNhkX6TE to work -->
+      <id>with-keystone-plugin</id>
+      <build>
+        <plugins>
+          <!-- skip the assembly plugin -->
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>skip</phase>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.intelligentsia.keystone</groupId>
+            <artifactId>plugin</artifactId>
+            <version>1.1</version>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>custom</goal>
+                </goals>
+                <configuration>
+                  <!-- main-class as described in http://intelligents-ia.com/index.php/post/2011/04/29/Keystone-1.1-est-sortie-! doesn't work -->
+                  <mainClass>ReadSpi</mainClass>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>intelligents-ia</id>
+          <url>http://intelligents-ia.com/maven2</url>
+        </pluginRepository>
+      </pluginRepositories>
+      <repositories>
+        <repository>
+          <id>intelligents-ia</id>
+          <url>http://intelligents-ia.com/maven2</url>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
 </project>
