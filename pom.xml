@@ -11,6 +11,7 @@
       <url>file:///${project.basedir}/lib</url>
     </repository>
   </repositories>
+  <!-- trigger a PR -->
   <build>
     <plugins>
       <plugin>
